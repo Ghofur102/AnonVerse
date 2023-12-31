@@ -19,6 +19,14 @@
 </head>
 
 <body>
+    <script>
+        @if ($errors->any())
+            alert('{{ $errors->first() }}');
+        @endif
+        @if (session('success'))
+            alert("{{ session('success') }}");
+        @endif
+    </script>
     <div class="container-fluid">
         <header class="d-flex flex-wrap align-items-center justify-content-center py-3 mb-4 border-bottom">
             <div class="col-md-3 mb-2 mb-md-0">
@@ -41,15 +49,14 @@
                     <div class="btn-group">
                         <a class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="https://github.com/mdo.png" alt="mdo" width="48" height="48"
-                            class="rounded-circle" />
+                                class="rounded-circle" />
                         </a>
                         <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="/akun-anda">Akun Anda</a></li>
-                          <li><a class="dropdown-item" href="/chatify">Chatify</a></li>
-                          <li><a class="dropdown-item" href="/logout">Keluar</a></li>
+                            <li><a class="dropdown-item" href="/akun-anda">Akun Anda</a></li>
+                            <li><a class="dropdown-item" href="/chatify">Chatify</a></li>
+                            <li><a class="dropdown-item" href="/logout">Keluar</a></li>
                         </ul>
-                      </div>
-
+                    </div>
                 @else
                     <a href="/login">
                         <button type="button" class="btn btn-outline-primary me-2">

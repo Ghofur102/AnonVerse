@@ -26,7 +26,7 @@ class AuthRepository implements AuthInterface
     public function register($data)
     {
         $rules = [
-            'username' => 'required|max:25',
+            'username' => 'required|max:25|unique:users',
             'password' => 'required|min:8'
         ];
         $this->validate->validate($data, $rules);

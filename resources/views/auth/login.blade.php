@@ -54,7 +54,7 @@
                                 <!-- Register buttons -->
                                 <div class="text-center">
                                     <span>Belum punya akun? <b class="text-primary">
-                                        <a href="/" style="text-decoration: none;">register</a>
+                                        <a href="/register" style="text-decoration: none;">register</a>
                                     </b></span>
                                 </div>
                             </form>
