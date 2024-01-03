@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('feeds', function (Blueprint $table) {
             $table->uuid('id')->unique();
-            $table->string('username')->unique();
-            $table->string('password');
-            $table->string('foto_user')->default('default-users.png');
+            $table->foreignUuid('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->string('file')->nullable();
+            $table->text('story')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('feeds');
     }
 };

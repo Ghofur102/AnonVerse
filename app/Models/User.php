@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -20,6 +21,7 @@ class User extends Authenticatable
     protected $fillable = [
         'username',
         'password',
+        'foto_user'
     ];
 
     /**
@@ -39,4 +41,32 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
+
+    public function feeds() {
+        return $this->hasMany(feeds::class, 'user_id');
+    }
+
+    public function sender_likes() {
+        return $this->hasMany(likes::class, 'sender_id');
+    }
+
+    public function recipient_likes() {
+        return $this->hasMany(likes::class, 'recipient_id');
+    }
+
+    public function sender_comment() {
+        return $this->hasMany(comments::class, 'sender_id');
+    }
+
+    public function recipient_comment() {
+        return $this->hasMany(comments::class, 'recipient_id');
+    }
+
+
+    protected static function boot() {
+        parent::boot();
+        static::creating(function ($model) {
+            $model->id = Str::uuid();
+        });
+    }
 }
