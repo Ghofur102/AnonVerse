@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\feeds;
 use App\Repositories\FeedsRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FeedsController extends Controller
 {

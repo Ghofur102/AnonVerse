@@ -63,6 +63,9 @@ class User extends Authenticatable
     }
 
 
+    public $incrementing = false;
+    protected $primaryKey = 'id';
+    protected $keyType = 'integer';
     protected static function boot() {
         parent::boot();
         static::creating(function ($model) {
