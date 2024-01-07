@@ -87,7 +87,9 @@
                             $extensionVideo = ['mp4'];
                         @endphp
                         @if (in_array(strtolower($extension), $extensionImage))
-                            <img src="{{ asset('storage/' . $feed->file) }}" class="w-100" />
+                            <div class="text-center">
+                                <img src="{{ asset('storage/' . $feed->file) }}" style="object-fit:cover;" />
+                            </div>
                         @elseif (in_array(strtolower($extension), $extensionVideo))
                             <video class="w-100" controls>
                                 <source src="{{ asset('storage/' . $feed->file) }}" type="video/mp4">
@@ -109,24 +111,49 @@
                                     <path fill="currentColor"
                                         d="M2 16h5v14H2zm21 14H9V15.197l3.042-4.563l.845-5.917A2.01 2.01 0 0 1 14.868 3H15a3.003 3.003 0 0 1 3 3v6h8a4.005 4.005 0 0 1 4 4v7a7.008 7.008 0 0 1-7 7" />
                                 </svg>
-                                <span>124</span>
+                                <span id="count-likes">{{ $feed->count_likes() }}</span>
                             </a>
                         </div>
                         <div>
-                            <a href="" class="text-muted"> 8 comments </a>
+                            <a href="" class="text-muted"> 0 comments </a>
                         </div>
                     </div>
                     <!-- Reactions -->
 
                     <!-- Buttons -->
                     <div class="d-flex justify-content-between text-center border-top border-bottom mb-4">
-                        <button type="button" class="btn btn-lg text-secondary" data-bs-ripple-color="dark">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
-                                <path fill="currentColor"
-                                    d="M2 16h5v14H2zm21 14H9V15.197l3.042-4.563l.845-5.917A2.01 2.01 0 0 1 14.868 3H15a3.003 3.003 0 0 1 3 3v6h8a4.005 4.005 0 0 1 4 4v7a7.008 7.008 0 0 1-7 7" />
-                            </svg>
-                            <b style="font-size:14px;">Like</b>
-                        </button>
+                        @if (Auth::check())
+                            @if ($feed->is_like(Auth::user()->id))
+                                <button id="button-like" type="button" onclick="Like()" class="btn btn-lg text-primary"
+                                    data-bs-ripple-color="dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        viewBox="0 0 32 32">
+                                        <path fill="currentColor"
+                                            d="M2 16h5v14H2zm21 14H9V15.197l3.042-4.563l.845-5.917A2.01 2.01 0 0 1 14.868 3H15a3.003 3.003 0 0 1 3 3v6h8a4.005 4.005 0 0 1 4 4v7a7.008 7.008 0 0 1-7 7" />
+                                    </svg>
+                                    <b style="font-size:14px;">Like</b>
+                                </button>
+                            @else
+                                <button id="button-like" type="button" onclick="Like()"
+                                    class="btn btn-lg text-secondary" data-bs-ripple-color="dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        viewBox="0 0 32 32">
+                                        <path fill="currentColor"
+                                            d="M2 16h5v14H2zm21 14H9V15.197l3.042-4.563l.845-5.917A2.01 2.01 0 0 1 14.868 3H15a3.003 3.003 0 0 1 3 3v6h8a4.005 4.005 0 0 1 4 4v7a7.008 7.008 0 0 1-7 7" />
+                                    </svg>
+                                    <b style="font-size:14px;">Like</b>
+                                </button>
+                            @endif
+                        @else
+                            <button type="button" class="btn btn-lg text-secondary" data-bs-ripple-color="dark">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    viewBox="0 0 32 32">
+                                    <path fill="currentColor"
+                                        d="M2 16h5v14H2zm21 14H9V15.197l3.042-4.563l.845-5.917A2.01 2.01 0 0 1 14.868 3H15a3.003 3.003 0 0 1 3 3v6h8a4.005 4.005 0 0 1 4 4v7a7.008 7.008 0 0 1-7 7" />
+                                </svg>
+                                <b style="font-size:14px;">Like</b>
+                            </button>
+                        @endif
                         <button type="button" class="btn btn-lg text-primary" data-bs-ripple-color="dark">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                 <path fill="currentColor"
@@ -147,132 +174,268 @@
                     <!-- Comments -->
 
                     <!-- Input -->
-                    <div style="margin-bottom: 75px;">
-                        <div class="d-flex mb-3">
-                            <a href="">
-                                <img src="https://mdbcdn.b-cdn.net/img/new/avatars/18.webp"
-                                    class="border rounded-circle me-2" alt="Avatar" style="height: 40px" />
-                            </a>
-                            <div class="form-outline w-100">
-                                <textarea class="form-control" placeholder="Write a comment" id="textAreaExample" rows="2"></textarea>
+                    <form id="FormCommentStore"
+                        action="{{ route('comment.store', ['recipient_id' => $feed->User->id, 'sender_id' => Auth::user()->id, 'feed_id' => $feed->id]) }}"
+                        method="post">
+                        <div style="margin-bottom: 75px;">
+                            <div class="d-flex mb-3">
+                                <a href="">
+                                    <img src="{{ asset('default-users.png') }}" class="border rounded-circle me-2"
+                                        alt="Avatar" style="height: 40px" />
+                                </a>
+                                <div class="form-outline w-100">
+                                    <textarea class="form-control" name="comment" placeholder="Write a comment" id="main-comment" rows="2"></textarea>
+                                </div>
                             </div>
+                            <button type="button" onclick="CommentStore()"
+                                class="btn btn-sm text-primary border border-black float-end" data-bs-ripple-color="dark">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    viewBox="0 0 24 24">
+                                    <path fill="currentColor"
+                                        d="M4.4 19.425q-.5.2-.95-.088T3 18.5V14l8-2l-8-2V5.5q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925z" />
+                                </svg>
+                                <b style="font-size: 14px;">Send</b>
+                            </button>
                         </div>
-                        <button type="button" class="btn btn-sm text-primary border border-black float-end"
-                            data-bs-ripple-color="dark">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                <path fill="currentColor"
-                                    d="M4.4 19.425q-.5.2-.95-.088T3 18.5V14l8-2l-8-2V5.5q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925z" />
-                            </svg>
-                            <b style="font-size: 14px;">Send</b>
-                        </button>
-                    </div>
+                    </form>
                     <!-- Input -->
 
                     <!-- Answers -->
 
+                    <div id="new-comment"></div>
                     <!-- Single answer -->
-                    <div class="d-flex mb-3 mt-3">
-                        <a href="">
-                            <img src="https://mdbcdn.b-cdn.net/img/new/avatars/8.webp" class="border rounded-circle me-2"
-                                alt="Avatar" style="height: 40px" />
-                        </a>
-                        <div>
-                            <div class="bg-light rounded-3 px-3 py-1">
-                                <a href="" class="text-dark mb-0">
-                                    <strong>Malcolm Dosh</strong> <br>
-                                    <small>10h</small>
+                    @foreach ($feed->comments as $item)
+                        @if ($item->parent_id == null)
+                            <div class="d-flex mb-3 mt-3">
+                                <a href="">
+                                    <img src="{{ asset('default-users.png') }}" class="border rounded-circle me-2"
+                                        alt="Avatar" style="height: 40px" />
                                 </a>
-                                <a href="" class="text-muted d-block">
-                                    <small>Lorem ipsum dolor sit amet consectetur,
-                                        adipisicing elit. Natus, aspernatur!</small>
-                                </a>
-                            </div>
-                            <a href="" class="text-muted small ms-3 me-2"><strong>Like</strong> <b>12</b></a>
-                            <a data-bs-toggle="collapse" href="#collapseExample" class="text-muted small me-2"
-                                aria-expanded="false" aria-controls="collapseExample">
-                                <strong>Reply</strong> <b>12</b>
-                            </a>
-                            <div class="collapse" id="collapseExample">
-                                <!-- Input -->
-                                <div class="mt-3" style="margin-bottom: 75px;">
-                                    <div class="d-flex mb-3">
-                                        <a href="">
-                                            <img src="https://mdbcdn.b-cdn.net/img/new/avatars/18.webp"
-                                                class="border rounded-circle me-2" alt="Avatar" style="height: 40px" />
+                                <div>
+                                    <div class="bg-light rounded-3 px-3 py-1">
+                                        <a href="" class="text-dark mb-0">
+                                            <strong>{{ $item->Sender->username }}</strong> <br>
+                                            <small>{{ \Carbon\Carbon::parse($item->created_at)->locale('id_ID')->diffForHumans() }}</small>
                                         </a>
-                                        <div class="form-outline w-100">
-                                            <textarea class="form-control" placeholder="Write a comment" id="textAreaExample" rows="2"></textarea>
-                                        </div>
+                                        <a href="" class="text-muted d-block">
+                                            <small>{{ $item->comment }}</small>
+                                        </a>
                                     </div>
-                                    <button type="button" class="btn btn-sm text-primary border border-black float-end"
-                                        data-bs-ripple-color="dark">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24">
-                                            <path fill="currentColor"
-                                                d="M4.4 19.425q-.5.2-.95-.088T3 18.5V14l8-2l-8-2V5.5q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925z" />
-                                        </svg>
-                                        <b style="font-size: 14px;">Send</b>
-                                    </button>
-                                </div>
-                                <!-- Input -->
-                                <div class="mt-2 mb-2">
-                                    <!-- Single answer -->
-                                    <div class="d-flex mb-3">
-                                        <a href="">
-                                            <img src="https://mdbcdn.b-cdn.net/img/new/avatars/5.webp"
-                                                class="border rounded-circle me-2" alt="Avatar" style="height: 40px" />
-                                        </a>
-                                        <div>
-                                            <div class="bg-light rounded-3 px-3 py-1">
-                                                <a href="" class="text-dark mb-0">
-                                                    <strong>Rhia Wallis</strong> <br>
-                                                    <small>10h</small>
-                                                </a>
-                                                <a href="" class="text-muted d-block">
-                                                    <small>Et tempora ad natus autem enim a distinctio
-                                                        quaerat asperiores necessitatibus commodi dolorum
-                                                        nam perferendis labore delectus, aliquid placeat
-                                                        quia nisi magnam.</small>
-                                                </a>
+                                    @if (Auth::check())
+                                        @if ($item->is_like(Auth::user()->id))
+                                            <a onclick="LikeMainComment({{ $item->id }})"
+                                                id="a-like-main-comment{{ $item->id }}"
+                                                class="text-primary small ms-3 me-2"><strong>Like</strong> <b
+                                                    id="count-likes-main-comment{{ $item->id }}">{{ $item->count_likes() }}</b></a>
+                                        @else
+                                            <a onclick="LikeMainComment({{ $item->id }})"
+                                                id="a-like-main-comment{{ $item->id }}"
+                                                class="text-muted small ms-3 me-2"><strong>Like</strong> <b
+                                                    id="count-likes-main-comment{{ $item->id }}">{{ $item->count_likes() }}</b></a>
+                                        @endif
+                                    @else
+                                        <a class="text-muted small ms-3 me-2"><strong>Like</strong> <b
+                                                id="count-likes-main-comment{{ $item->id }}">{{ $item->count_likes() }}</b>
+                                    @endif
+                                    <a data-bs-toggle="collapse" href="#collapseExample{{ $item->id }}"
+                                        class="text-muted small me-2" aria-expanded="false"
+                                        aria-controls="collapseExample{{ $item->id }}">
+                                        <strong>Reply</strong> <b>{{ $item->CommentChild()->count() + $item->CommentMainChild->count() }}</b>
+                                    </a>
+                                    <div class="collapse" id="collapseExample{{ $item->id }}">
+                                        <!-- Input -->
+                                        <form id="FormReplyCommentStore{{ $item->id }}"
+                                            action="{{ route('comment.store', ['recipient_id' => $item->Sender->id, 'sender_id' => Auth::user()->id, 'feed_id' => $feed->id, 'parent_id' => $item->id]) }}"
+                                            method="post">
+                                            <div class="mt-3" style="margin-bottom: 75px;">
+                                                <div class="d-flex mb-3">
+                                                    <a href="">
+                                                        <img src="https://mdbcdn.b-cdn.net/img/new/avatars/18.webp"
+                                                            class="border rounded-circle me-2" alt="Avatar"
+                                                            style="height: 40px" />
+                                                    </a>
+                                                    <div class="form-outline w-100">
+                                                        <textarea class="form-control reply-comment" name="comment" placeholder="Write a comment" rows="2"></textarea>
+                                                    </div>
+                                                </div>
+                                                <button type="button" onclick="ReplyCommentStore({{ $item->id }})"
+                                                    class="btn btn-sm text-primary border border-black float-end"
+                                                    data-bs-ripple-color="dark">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        viewBox="0 0 24 24">
+                                                        <path fill="currentColor"
+                                                            d="M4.4 19.425q-.5.2-.95-.088T3 18.5V14l8-2l-8-2V5.5q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925z" />
+                                                    </svg>
+                                                    <b style="font-size: 14px;">Send</b>
+                                                </button>
                                             </div>
-                                            <a href="" class="text-muted small ms-3 me-2"><strong>Like</strong>
-                                                <b>12</b></a>
-                                            <a data-bs-toggle="collapse" href="#collapseExample2"
-                                                class="text-muted small me-2" aria-expanded="false"
-                                                aria-controls="collapseExample2"><strong>Reply</strong></a>
-                                            <div class="collapse" id="collapseExample2">
-                                                <!-- Input -->
-                                                <div class="mt-3" style="margin-bottom: 75px;">
+                                        </form>
+                                        <div id="new-reply-comment{{ $item->id }}"></div>
+                                        <!-- Input -->
+                                        @foreach ($item->CommentChild as $i)
+                                            @if ($i->parent_main_id == null)
+                                                <div class="mt-2 mb-2">
+                                                    <!-- Single answer -->
                                                     <div class="d-flex mb-3">
                                                         <a href="">
-                                                            <img src="https://mdbcdn.b-cdn.net/img/new/avatars/18.webp"
+                                                            <img src="{{ asset('default-users.png') }}"
                                                                 class="border rounded-circle me-2" alt="Avatar"
                                                                 style="height: 40px" />
                                                         </a>
-                                                        <div class="form-outline w-100">
-                                                            <textarea class="form-control" placeholder="Write a comment" id="textAreaExample" rows="2"></textarea>
+                                                        <div>
+                                                            <div class="bg-light rounded-3 px-3 py-1">
+                                                                <a href="" class="text-dark mb-0">
+                                                                    <strong>{{ $i->Sender->username }}</strong> <br>
+                                                                    <small>{{ \Carbon\Carbon::parse($i->created_at)->locale('id_ID')->diffForHumans() }}</small>
+                                                                </a>
+                                                                <a href="" class="text-muted d-block">
+                                                                    <small> {{ $i->comment }}</small>
+                                                                </a>
+                                                            </div>
+                                                            @if (Auth::check())
+                                                            @if ($i->is_like(Auth::user()->id))
+                                                                <a onclick="LikeMainComment({{ $i->id }})"
+                                                                    id="a-like-main-comment{{ $i->id }}"
+                                                                    class="text-primary small ms-3 me-2"><strong>Like</strong> <b
+                                                                        id="count-likes-main-comment{{ $i->id }}">{{ $i->count_likes() }}</b></a>
+                                                            @else
+                                                                <a onclick="LikeMainComment({{ $i->id }})"
+                                                                    id="a-like-main-comment{{ $i->id }}"
+                                                                    class="text-muted small ms-3 me-2"><strong>Like</strong> <b
+                                                                        id="count-likes-main-comment{{ $i->id }}">{{ $i->count_likes() }}</b></a>
+                                                            @endif
+                                                        @else
+                                                            <a class="text-muted small ms-3 me-2"><strong>Like</strong> <b
+                                                                    id="count-likes-main-comment{{ $i->id }}">{{ $i->count_likes() }}</b>
+                                                        @endif
+                                                            <a data-bs-toggle="collapse"
+                                                                href="#collapseExample2{{ $i->id }}"
+                                                                class="text-muted small me-2" aria-expanded="false"
+                                                                aria-controls="collapseExample2{{ $i->id }}"><strong>Reply</strong></a>
+                                                            <div class="collapse"
+                                                                id="collapseExample2{{ $i->id }}">
+                                                                <!-- Input -->
+                                                                <form id="FormReply2CommentStore{{ $i->id }}"
+                                                                    action="{{ route('comment.store', ['recipient_id' => $i->Sender->id, 'sender_id' => Auth::user()->id, 'feed_id' => $feed->id, 'parent_id' => $i->id, 'parent_main_id' => $item->id]) }}"
+                                                                    method="post">
+                                                                    <div class="mt-3" style="margin-bottom: 75px;">
+                                                                        <div class="d-flex mb-3">
+                                                                            <a href="">
+                                                                                <img src="{{ asset('default-users.png') }}"
+                                                                                    class="border rounded-circle me-2"
+                                                                                    alt="Avatar" style="height: 40px" />
+                                                                            </a>
+                                                                            <div class="form-outline w-100">
+                                                                                <textarea class="form-control reply2-comment" placeholder="Write a comment" name="comment" rows="2"></textarea>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button type="button"
+                                                                            onclick="Reply2CommentStore({{ $i->id }})"
+                                                                            class="btn btn-sm text-primary border border-black float-end"
+                                                                            data-bs-ripple-color="dark">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                width="24" height="24"
+                                                                                viewBox="0 0 24 24">
+                                                                                <path fill="currentColor"
+                                                                                    d="M4.4 19.425q-.5.2-.95-.088T3 18.5V14l8-2l-8-2V5.5q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925z" />
+                                                                            </svg>
+                                                                            <b style="font-size: 14px;">Send</b>
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                                <!-- Input -->
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <button type="button"
-                                                        class="btn btn-sm text-primary border border-black float-end"
-                                                        data-bs-ripple-color="dark">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                            height="24" viewBox="0 0 24 24">
-                                                            <path fill="currentColor"
-                                                                d="M4.4 19.425q-.5.2-.95-.088T3 18.5V14l8-2l-8-2V5.5q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925z" />
-                                                        </svg>
-                                                        <b style="font-size: 14px;">Send</b>
-                                                    </button>
                                                 </div>
-                                                <!-- Input -->
-                                            </div>
-                                        </div>
+                                            @endif
+                                            <div id="new-reply2-comment{{ $i->id }}"></div>
+                                            @foreach ($item->CommentMainChild as $i)
+                                                <div class="mt-2 mb-2">
+                                                    <!-- Single answer -->
+                                                    <div class="d-flex mb-3">
+                                                        <a href="">
+                                                            <img src="{{ asset('default-users.png') }}"
+                                                                class="border rounded-circle me-2" alt="Avatar"
+                                                                style="height: 40px" />
+                                                        </a>
+                                                        <div>
+                                                            <div class="bg-light rounded-3 px-3 py-1">
+                                                                <a href="" class="text-dark mb-0">
+                                                                    <strong>{{ $i->Sender->username }}</strong> <br>
+                                                                    <small>{{ \Carbon\Carbon::parse($i->created_at)->locale('id_ID')->diffForHumans() }}</small>
+                                                                </a>
+                                                                <a href="" class="text-muted d-block">
+                                                                    <small>
+                                                                        @if ($i->parent_id != null)
+                                                                            @ {{ $i->Recipient->username }}
+                                                                        @endif {{ $i->comment }}
+                                                                    </small>
+                                                                </a>
+                                                            </div>
+                                                            @if (Auth::check())
+                                                            @if ($i->is_like(Auth::user()->id))
+                                                                <a onclick="LikeMainComment({{ $i->id }})"
+                                                                    id="a-like-main-comment{{ $i->id }}"
+                                                                    class="text-primary small ms-3 me-2"><strong>Like</strong> <b
+                                                                        id="count-likes-main-comment{{ $i->id }}">{{ $i->count_likes() }}</b></a>
+                                                            @else
+                                                                <a onclick="LikeMainComment({{ $i->id }})"
+                                                                    id="a-like-main-comment{{ $i->id }}"
+                                                                    class="text-muted small ms-3 me-2"><strong>Like</strong> <b
+                                                                        id="count-likes-main-comment{{ $i->id }}">{{ $i->count_likes() }}</b></a>
+                                                            @endif
+                                                        @else
+                                                            <a class="text-muted small ms-3 me-2"><strong>Like</strong> <b
+                                                                    id="count-likes-main-comment{{ $i->id }}">{{ $i->count_likes() }}</b>
+                                                        @endif
+                                                            <a data-bs-toggle="collapse"
+                                                                href="#collapseExample2{{ $i->id }}"
+                                                                class="text-muted small me-2" aria-expanded="false"
+                                                                aria-controls="collapseExample2{{ $i->id }}"><strong>Reply</strong></a>
+                                                            <div class="collapse"
+                                                                id="collapseExample2{{ $i->id }}">
+                                                                <!-- Input -->
+                                                                <form id="FormReply2CommentStore{{ $i->id }}"
+                                                                    action="{{ route('comment.store', ['recipient_id' => $i->Sender->id, 'sender_id' => Auth::user()->id, 'feed_id' => $feed->id, 'parent_id' => $i->id, 'parent_main_id' => $item->id]) }}"
+                                                                    method="post">
+                                                                    <div class="mt-3" style="margin-bottom: 75px;">
+                                                                        <div class="d-flex mb-3">
+                                                                            <a href="">
+                                                                                <img src="{{ asset('default-users.png') }}"
+                                                                                    class="border rounded-circle me-2"
+                                                                                    alt="Avatar" style="height: 40px" />
+                                                                            </a>
+                                                                            <div class="form-outline w-100">
+                                                                                <textarea class="form-control reply2-comment" placeholder="Write a comment" name="comment" rows="2"></textarea>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button type="button"
+                                                                            onclick="Reply2CommentStore({{ $i->id }})"
+                                                                            class="btn btn-sm text-primary border border-black float-end"
+                                                                            data-bs-ripple-color="dark">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                width="24" height="24"
+                                                                                viewBox="0 0 24 24">
+                                                                                <path fill="currentColor"
+                                                                                    d="M4.4 19.425q-.5.2-.95-.088T3 18.5V14l8-2l-8-2V5.5q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925z" />
+                                                                            </svg>
+                                                                            <b style="font-size: 14px;">Send</b>
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                                <!-- Input -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
+                        @endif
+                    @endforeach
                     <!-- Answers -->
 
                     <!-- Comments -->
@@ -314,5 +477,307 @@
                 });
             });
         }
+        @if (Auth::check())
+            @if ($count_feed >= 1)
+                function Like() {
+                    $.ajax({
+                        url: "/like-feed/{{ $feed->User->id }}/{{ Auth::user()->id }}/{{ $feed->id }}",
+                        method: "POST",
+                        headers: {
+                            "X-Csrf-Token": "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            if ($("#button-like").hasClass('text-secondary')) {
+                                $("#button-like").removeClass('text-secondary');
+                                $("#button-like").addClass('text-primary');
+                                let c = parseInt($("#count-likes").text()) + 1;
+                                $("#count-likes").html(c);
+                            } else {
+                                $("#button-like").addClass('text-secondary');
+                                $("#button-like").removeClass('text-primary');
+                                let c = parseInt($("#count-likes").text()) - 1;
+                                $("#count-likes").html(c);
+                            }
+                        },
+                        error: function(xhr, error, status) {
+                            alert(xhr.responseText)
+                        }
+                    });
+                }
+
+                function LikeMainComment(id) {
+                    $.ajax({
+                        url: "/like-comment/{{ $feed->User->id }}/{{ Auth::user()->id }}/" + id,
+                        method: "POST",
+                        headers: {
+                            "X-Csrf-Token": "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            if ($("#a-like-main-comment" + id).hasClass('text-muted')) {
+                                $("#a-like-main-comment" + id).removeClass('text-muted');
+                                $("#a-like-main-comment" + id).addClass('text-primary');
+                                let c = parseInt($("#count-likes-main-comment" + id).text()) + 1;
+                                $("#count-likes-main-comment" + id).html(c);
+                            } else {
+                                $("#a-like-main-comment" + id).addClass('text-muted');
+                                $("#a-like-main-comment" + id).removeClass('text-primary');
+                                let c = parseInt($("#count-likes-main-comment" + id).text()) - 1;
+                                $("#count-likes-main-comment" + id).html(c);
+                            }
+                        },
+                        error: function(xhr, error, status) {
+                            alert(xhr.responseText)
+                        }
+                    });
+                }
+            @endif
+
+            function CommentStore() {
+                let route = $("#FormCommentStore").attr('action');
+                let data = new FormData($("#FormCommentStore")[0]);
+                $.ajax({
+                    url: route,
+                    method: "POST",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-Csrf-Token': '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        $("#main-comment").val('');
+                        $("#new-comment").html(`
+                    <div class="d-flex mb-3 mt-3">
+                        <a href="">
+                            <img src="{{ asset('default-users.png') }}" class="border rounded-circle me-2"
+                                alt="Avatar" style="height: 40px" />
+                        </a>
+                        <div>
+                            <div class="bg-light rounded-3 px-3 py-1">
+                                <a href="" class="text-dark mb-0">
+                                    <strong>${response.name_sender}</strong> <br>
+                                    <small>1 detik yang lalu</small>
+                                </a>
+                                <a href="" class="text-muted d-block">
+                                    <small>${response.comment}</small>
+                                </a>
+                            </div>
+                                            <a onclick="LikeMainComment(${response.id})"
+                                                id="a-like-main-comment${response.id}"
+                                                class="text-muted small ms-3 me-2"><strong>Like</strong> <b
+                                                    id="count-likes-main-comment${response.id}">0</b></a>
+                            <a data-bs-toggle="collapse" href="#collapseExample${response.id}" class="text-muted small me-2"
+                                aria-expanded="false" aria-controls="collapseExample${response.id}">
+                                <strong>Reply</strong> <b>12</b>
+                            </a>
+                            <div class="collapse" id="collapseExample${response.id}">
+                                <!-- Input -->
+                                <form id="FormReplyCommentStore${response.id}"
+                                        action="/comment?feed_id=${response.feed_id}&recipient_id=${response.sender_id}&sender_id=${response.auth_user_id}"
+                                        method="post">
+                                        <input type="number" name="parent_id" value="${response.id}" hidden>
+                                <div class="mt-3" style="margin-bottom: 75px;">
+                                    <div class="d-flex mb-3">
+                                        <a href="">
+                                            <img src="{{ asset('default-users.png') }}"
+                                                class="border rounded-circle me-2" alt="Avatar" style="height: 40px" />
+                                        </a>
+                                        <div class="form-outline w-100">
+                                            <textarea class="form-control reply-comment" name="comment" placeholder="Write a comment" rows="2"></textarea>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm text-primary border border-black float-end" onclick="ReplyCommentStore(${response.id})"
+                                        data-bs-ripple-color="dark">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24">
+                                            <path fill="currentColor"
+                                                d="M4.4 19.425q-.5.2-.95-.088T3 18.5V14l8-2l-8-2V5.5q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925z" />
+                                        </svg>
+                                        <b style="font-size: 14px;">Send</b>
+                                    </button>
+                                </div>
+                                </form>
+                                <div id="new-reply-comment${response.id}"></div>
+                            </div>
+                        </div>
+                    </div>
+                        `);
+                    },
+                    error: function(xhr, error, status) {
+
+                    }
+                });
+
+            }
+
+            function ReplyCommentStore(id) {
+                let route = $("#FormReplyCommentStore" + id).attr('action');
+                let data = new FormData($("#FormReplyCommentStore" + id)[0]);
+                $.ajax({
+                    url: route,
+                    method: "POST",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-Csrf-Token': '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        $(".reply-comment").val('');
+                        $("#new-reply-comment" + id).html(`
+                                <div class="mt-2 mb-2">
+                                    <!-- Single answer -->
+                                    <div class="d-flex mb-3">
+                                        <a href="">
+                                            <img src="{{ asset('default-users.png') }}"
+                                                class="border rounded-circle me-2" alt="Avatar" style="height: 40px" />
+                                        </a>
+                                        <div>
+                                            <div class="bg-light rounded-3 px-3 py-1">
+                                                <a href="" class="text-dark mb-0">
+                                                    <strong>${response.name_sender}</strong> <br>
+                                                    <small>1 detik yang lalu</small>
+                                                </a>
+                                                <a href="" class="text-muted d-block">
+                                                    <small> ${response.comment}</small>
+                                                </a>
+                                            </div>
+                                            <a onclick="LikeMainComment(${response.id})"
+                                                id="a-like-main-comment${response.id}"
+                                                class="text-muted small ms-3 me-2"><strong>Like</strong> <b
+                                                    id="count-likes-main-comment${response.id}">0</b></a>
+                                            <a data-bs-toggle="collapse" href="#collapseExample2${response.id}"
+                                                class="text-muted small me-2" aria-expanded="false"
+                                                aria-controls="collapseExample2${response.id}"><strong>Reply</strong></a>
+                                            <div class="collapse" id="collapseExample2${response.id}">
+                                                <!-- Input -->
+                                                <form id="FormReply2CommentStore${response.id}"
+                                                action="/comment?feed_id=${response.feed_id}&recipient_id=${response.sender_id}&sender_id=${response.auth_user_id}"
+                                        method="post">
+                                        <input type="number" name="parent_id" value="${response.id}" hidden>
+                                        <input type="number" name="parent_main_id" value="${response.parent_id}" hidden>
+                                                <div class="mt-3" style="margin-bottom: 75px;">
+                                                    <div class="d-flex mb-3">
+                                                        <a href="">
+                                                            <img src="{{ asset('default-users.png') }}"
+                                                                class="border rounded-circle me-2" alt="Avatar"
+                                                                style="height: 40px" />
+                                                        </a>
+                                                        <div class="form-outline w-100">
+                                                            <textarea class="form-control reply2-comment" name="comment" placeholder="Write a comment"  rows="2"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" onclick="Reply2CommentStore(${response.id})"
+                                                        class="btn btn-sm text-primary border border-black float-end"
+                                                        data-bs-ripple-color="dark">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                            height="24" viewBox="0 0 24 24">
+                                                            <path fill="currentColor"
+                                                                d="M4.4 19.425q-.5.2-.95-.088T3 18.5V14l8-2l-8-2V5.5q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925z" />
+                                                        </svg>
+                                                        <b style="font-size: 14px;">Send</b>
+                                                    </button>
+                                                </div>
+                                                </form>
+                                                <!-- Input -->
+                                                <div id="new-reply2-comment${response.id}"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        `);
+                    },
+                    error: function(xhr, error, status) {
+                        alert(xhr.responseText);
+                        console.log(xhr.responseText);
+                    }
+                });
+
+            }
+
+            function Reply2CommentStore(id) {
+                let route = $("#FormReply2CommentStore" + id).attr('action');
+                let data = new FormData($("#FormReply2CommentStore" + id)[0]);
+                $.ajax({
+                    url: route,
+                    method: "POST",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-Csrf-Token': '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        $(".reply2-comment").val('');
+                        $("#new-reply2-comment" + id).html(`
+                                <div class="mt-2 mb-2">
+                                    <!-- Single answer -->
+                                    <div class="d-flex mb-3">
+                                        <a href="">
+                                            <img src="{{ asset('default-users.png') }}"
+                                                class="border rounded-circle me-2" alt="Avatar" style="height: 40px" />
+                                        </a>
+                                        <div>
+                                            <div class="bg-light rounded-3 px-3 py-1">
+                                                <a href="" class="text-dark mb-0">
+                                                    <strong>${response.name_sender}</strong> <br>
+                                                    <small>1 detik yang lalu</small>
+                                                </a>
+                                                <a href="" class="text-muted d-block">
+                                                    <small>@${response.name_recipient} ${response.comment}</small>
+                                                </a>
+                                            </div>
+                                            <a onclick="LikeMainComment(${response.id})"
+                                                id="a-like-main-comment${response.id}"
+                                                class="text-muted small ms-3 me-2"><strong>Like</strong> <b
+                                                    id="count-likes-main-comment${response.id}">0</b></a>
+                                            <a data-bs-toggle="collapse" href="#collapseExample2${response.id}"
+                                                class="text-muted small me-2" aria-expanded="false"
+                                                aria-controls="collapseExample2${response.id}"><strong>Reply</strong></a>
+                                            <div class="collapse" id="collapseExample2${response.id}">
+                                                <!-- Input -->
+                                                <form id="FormReply2CommentStore${response.id}"
+                                                action="/comment?feed_id=${response.feed_id}&recipient_id=${response.sender_id}&sender_id=${response.auth_user_id}"
+                                        method="post">
+                                        <input type="number" name="parent_id" value="${response.id}" hidden>
+                                        <input type="number" name="parent_main_id" value="${response.parent_id}" hidden>
+
+                                                <div class="mt-3" style="margin-bottom: 75px;">
+                                                    <div class="d-flex mb-3">
+                                                        <a href="">
+                                                            <img src="{{ asset('default-users.png') }}"
+                                                                class="border rounded-circle me-2" alt="Avatar"
+                                                                style="height: 40px" />
+                                                        </a>
+                                                        <div class="form-outline w-100">
+                                                            <textarea class="form-control reply2-comment" name="comment" placeholder="Write a comment" rows="2"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" onclick="Reply2CommentStore(${response.id})"
+                                                        class="btn btn-sm text-primary border border-black float-end"
+                                                        data-bs-ripple-color="dark">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                            height="24" viewBox="0 0 24 24">
+                                                            <path fill="currentColor"
+                                                                d="M4.4 19.425q-.5.2-.95-.088T3 18.5V14l8-2l-8-2V5.5q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925z" />
+                                                        </svg>
+                                                        <b style="font-size: 14px;">Send</b>
+                                                    </button>
+                                                </div>
+                                                </form>
+                                                <!-- Input -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        `);
+                    },
+                    error: function(xhr, error, status) {
+                        alert(xhr.responseText);
+                    }
+                });
+
+            }
+        @endif
     </script>
 @endsection

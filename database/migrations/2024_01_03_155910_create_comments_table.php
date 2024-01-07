@@ -17,12 +17,13 @@ return new class extends Migration
             $table->foreignUuid('sender_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreignUuid('recipient_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('comment');
-            $table->unsignedBigInteger('parent_id')->nullable();
+            $table->text('parent_id')->nullable();
+            $table->longText('parent_main_id')->nullable();
             $table->timestamps();
         });
         Schema::table('likes', function (Blueprint $table) {
-            $table->unsignedBigInteger('comment_id');
-            $table->foreign('comment_id')->references('id')->on('comments')->onDelete('cascade')->nullable();
+            $table->unsignedBigInteger('comment_id')->nullable();
+            $table->foreign('comment_id')->references('id')->on('comments')->onDelete('cascade');
         });
     }
 

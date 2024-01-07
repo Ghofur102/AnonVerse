@@ -12,16 +12,16 @@ class LikesFeedService
     {
         $this->LikesRepository = $LikesRepository;
     }
-    public function like(Request $request)
+    public function like($recipient, $sender, $feed)
     {
         $data = [
-            'sender_id' => $request->sender_id,
-            'recipient_id' => $request->recipient_id,
-            'feed_id' => $request->feed_id
+            'sender_id' => $sender,
+            'recipient_id' => $recipient,
+            'feed_id' => $feed
         ];
-        $check = $this->LikesRepository->IsLike($request->sender_id, $request->recipient_id, 'feed_id', $request->feed_id);
+        $check = $this->LikesRepository->IsLike($sender, $recipient, 'feed_id', $feed);
         if ($check) {
-            $this->LikesRepository->DestroyLike($request->sender_id, $request->recipient_id, 'feed_id', $request->feed_id);
+            $this->LikesRepository->DestroyLike($sender, $recipient, 'feed_id', $feed);
         } else {
             $this->LikesRepository->storeWithoutFile($data);
         }

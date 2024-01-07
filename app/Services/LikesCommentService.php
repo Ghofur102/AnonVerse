@@ -12,16 +12,16 @@ class LikesCommentService
     {
         $this->LikesRepository = $LikesRepository;
     }
-    public function like(Request $request)
+    public function like($recipient, $sender, $comment)
     {
         $data = [
-            'sender_id' => $request->sender_id,
-            'recipient_id' => $request->recipient_id,
-            'comment_id' => $request->feed_id
+            'sender_id' => $sender,
+            'recipient_id' => $recipient,
+            'comment_id' => $comment
         ];
-        $check = $this->LikesRepository->IsLike($request->sender_id, $request->recipient_id, 'comment_id', $request->feed_id);
+        $check = $this->LikesRepository->IsLike($sender, $recipient, 'comment_id', $comment);
         if ($check) {
-            $this->LikesRepository->DestroyLike($request->sender_id, $request->recipient_id, 'comment_id', $request->feed_id);
+            $this->LikesRepository->DestroyLike($sender, $recipient, 'comment_id', $comment);
         } else {
             $this->LikesRepository->storeWithoutFile($data);
         }

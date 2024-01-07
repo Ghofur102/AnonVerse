@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('likes', function (Blueprint $table) {
             $table->id();
-            $table->foreignUuid('feed_id')->references('id')->on('feeds')->onDelete('cascade')->nullable();
+            $table->uuid('feed_id')->nullable();
+            $table->foreign('feed_id')->references('id')->on('feeds')->onDelete('cascade');
             $table->foreignUuid('sender_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreignUuid('recipient_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();

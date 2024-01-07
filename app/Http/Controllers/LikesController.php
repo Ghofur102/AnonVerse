@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\likes;
 use App\Services\LikesCommentService;
 use App\Services\LikesFeedService;
 use App\Services\LikesService;
@@ -15,16 +16,16 @@ class LikesController extends Controller
         $this->LikeFeed = $LikeFeed;
         $this->LikeComment = $LikeComment;
     }
-    public function like_feed(Request $request) {
-        $this->LikeFeed->like($request);
+    public function like_feed(string $recipient, string $sender, string $feed) {
+        $this->LikeFeed->like($recipient, $sender, $feed);
         return response()->json([
-            'success' => true
+            'success' => true,
         ]);
     }
-    public function like_comment(Request $request) {
-        $this->LikeComment->like($request);
+    public function like_comment(string $recipient, string $sender, string $comment) {
+        $this->LikeComment->like($recipient, $sender, $comment);
         return response()->json([
-            'success' => true
+            'success' => true,
         ]);
     }
 }

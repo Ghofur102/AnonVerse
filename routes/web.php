@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AvatarsController;
 use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\FeedsController;
 use App\Http\Controllers\LikesController;
@@ -38,9 +39,7 @@ Route::get('/feed', [FeedsController::class, 'index'])->name('feed');
 Route::get('/komunitas', function () {
     return view('users.komunitas');
 })->name('komunitas');
-Route::get('/cari_avatar', function () {
-    return view("users.cari_avatar");
-})->name('cari.avatar');
+Route::get('/cari_avatar', [AvatarsController::class, 'cari_avatar'])->name('cari.avatar');
 
 Route::middleware(['auth'])->group(function () {
     // route logout
@@ -50,8 +49,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/update-feed', [FeedsController::class, 'update'])->name('update.feed');
     Route::delete('/destroy-feed', [FeedsController::class, 'destroy'])->name('destroy.feed');
     // route like for user
-    Route::post('/like-feed', [LikesController::class, 'like_feed'])->name('like.feed');
-    Route::post('/like-comment', [LikesController::class, 'like_comment'])->name('like.comment');
+    Route::post('/like-feed/{recipient}/{sender}/{feed}', [LikesController::class, 'like_feed'])->name('like.feed');
+    Route::post('/like-comment/{recipient}/{sender}/{comment}', [LikesController::class, 'like_comment'])->name('like.comment');
     // route comment for user
     Route::resource('/comment', CommentsController::class);
 });

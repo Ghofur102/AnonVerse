@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\comments;
+use App\Models\User;
 use App\Repositories\CommentsRepository;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class CommentsController extends Controller
 {
     /**
@@ -34,9 +35,22 @@ class CommentsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->CommentsRepository->storeWithoutFile($request->all());
+        $new = $this->CommentsRepository->storeWithoutFile($request->all());
+        if ($new->parent_main_id != null) {
+            $p = $new->parent_main_id;
+        } else {
+            $p = $new->parent_id;
+        }
         return response()->json([
-            'success' => true
+            'success' => true,
+            'name_sender' => Auth::user()->username,
+            'name_recipient' => $new->Recipient->username,
+            'auth_user_id' => Auth::user()->id,
+            'comment' => $request->comment,
+            'id' => $new->id,
+            'sender_id' => $new->Sender->id,
+            'feed_id' => $new->feed_id,
+            'parent_id' => $p
         ]);
     }
 

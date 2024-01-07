@@ -11,7 +11,7 @@ class feeds extends Model
     use HasFactory;
     public $incrementing = false;
     protected $primaryKey = 'id';
-    protected $keyType = 'integer';
+    protected $keyType = 'string';
     protected static function boot() {
         parent::boot();
         static::creating(function ($model) {
@@ -33,7 +33,15 @@ class feeds extends Model
         return $this->hasMany(likes::class, 'feed_id');
     }
 
+    public function count_likes() {
+        return likes::where('recipient_id', $this->User->id)->where('feed_id', $this->id)->count();
+    }
+
+    public function is_like($id) {
+        return likes::where('recipient_id', $this->User->id)->where('feed_id', $this->id)->where('sender_id', $id)->exists();
+    }
+
     public function comments() {
-        return $this->hasMany(comments::class, 'comment_id');
+        return $this->hasMany(comments::class, 'feed_id');
     }
 }

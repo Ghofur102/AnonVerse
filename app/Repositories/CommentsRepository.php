@@ -18,7 +18,8 @@ class CommentsRepository implements StoreInterface, UpdateInterface, DestroyInte
     public function storeWithoutFile(array $data)
     {
         $rules = [
-            "comment" => "required|max:225"
+            "comment" => "required|max:225",
+            "parent_id" => "integer"
         ];
         $this->AjaxValidator->validate($data, $rules);
         return comments::create($data);
