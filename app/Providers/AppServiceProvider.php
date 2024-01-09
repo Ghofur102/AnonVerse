@@ -13,6 +13,7 @@ use App\Contracts\UploadFileInterface;
 use App\Contracts\ValidatorInterface;
 use App\Repositories\AuthRepository;
 use App\Repositories\CommentsRepository;
+use App\Repositories\ComunityCategoriesRepository;
 use App\Repositories\FeedsRepository;
 use App\Repositories\LikesRepository;
 use App\Validators\AjaxValidator;
@@ -48,6 +49,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UpdateInterface::class, CommentsRepository::class);
         $this->app->bind(DestroyInterface::class, CommentsRepository::class);
         // comment
+        // comunity categories
+        $this->app->bind(StoreInterface::class, ComunityCategoriesRepository::class);
+        $this->app->bind(UpdateInterface::class, ComunityCategoriesRepository::class);
+        $this->app->bind(DestroyInterface::class, ComunityCategoriesRepository::class);
+        $this->app->bind(UploadFileInterface::class, ComunityCategoriesRepository::class);
+        $this->app->bind(UpdateFileInterface::class, ComunityCategoriesRepository::class);
+        // comunity categories
     }
 
     /**

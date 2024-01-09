@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AvatarsController;
 use App\Http\Controllers\CommentsController;
+use App\Http\Controllers\ComunityCategoriesController;
 use App\Http\Controllers\FeedsController;
 use App\Http\Controllers\LikesController;
 use Illuminate\Support\Facades\Route;
@@ -53,4 +54,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/like-comment/{recipient}/{sender}/{comment}', [LikesController::class, 'like_comment'])->name('like.comment');
     // route comment for user
     Route::resource('/comment', CommentsController::class);
+});
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // route for admin
+    Route::get('/admin/dashboard', function () {
+        return view('admin.dashboard');
+    });
+    Route::resource('/admin/kategori-komunitas', ComunityCategoriesController::class);
 });

@@ -250,7 +250,7 @@
                                             <div class="mt-3" style="margin-bottom: 75px;">
                                                 <div class="d-flex mb-3">
                                                     <a href="">
-                                                        <img src="https://mdbcdn.b-cdn.net/img/new/avatars/18.webp"
+                                                        <img src="{{ asset('default-users.png') }}"
                                                             class="border rounded-circle me-2" alt="Avatar"
                                                             style="height: 40px" />
                                                     </a>
@@ -766,6 +766,7 @@
                                                 </div>
                                                 </form>
                                                 <!-- Input -->
+                                                <div id="new-reply2-comment${response.id}"></div>
                                             </div>
                                         </div>
                                     </div>

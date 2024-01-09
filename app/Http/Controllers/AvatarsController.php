@@ -14,6 +14,6 @@ class AvatarsController extends Controller
 
     }
     public function update_bio_avatar() {
-        
+
     }
 }

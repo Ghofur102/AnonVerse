@@ -15,8 +15,12 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('username', 'password');
-        $this->AuthService->login($credentials);
-        return redirect('/')->with('success', 'Sukses login!');
+        $login = $this->AuthService->login($credentials);
+        if ($login) {
+            return redirect('/')->with('success', 'Sukses login!');
+        } else {
+            return redirect()->back()->withErrors('Gagal login!');
+        }
     }
     public function register(Request $request)
     {

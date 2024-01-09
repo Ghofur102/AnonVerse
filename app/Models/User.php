@@ -21,7 +21,8 @@ class User extends Authenticatable
     protected $fillable = [
         'username',
         'password',
-        'foto_user'
+        'bio',
+        'role'
     ];
 
     /**
@@ -70,6 +71,7 @@ class User extends Authenticatable
         parent::boot();
         static::creating(function ($model) {
             $model->id = Str::uuid();
+            $model->bio = "Hi, saya adalah pengguna baru AnonVerse!";
         });
     }
 }

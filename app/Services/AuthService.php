@@ -13,7 +13,7 @@ class AuthService
     }
     public function login($credentials)
     {
-        $this->AuthRepository->login($credentials);
+        return $this->AuthRepository->login($credentials);
     }
     public function register($data)
     {
