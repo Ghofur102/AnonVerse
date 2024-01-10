@@ -9,6 +9,7 @@ use App\Http\Controllers\ComunityController;
 use App\Http\Controllers\FeedsController;
 use App\Http\Controllers\LikesController;
 use App\Http\Controllers\QuestionsAnswersController;
+use App\Repositories\ApprovalAdminRepository;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,6 +43,8 @@ Route::get('/', function () {
 Route::get('/feed', [FeedsController::class, 'index'])->name('feed');
 Route::get('/komunitas', [ComunityController::class, 'index'])->name('komunitas');
 Route::get('/cari_avatar', [AvatarsController::class, 'cari_avatar'])->name('cari.avatar');
+// show detail category comunity
+Route::get('/detail-komunitas/{name}', [ComunityController::class, 'show'])->name('detail.komunitas');
 
 Route::middleware(['auth'])->group(function () {
     // route logout
@@ -57,8 +60,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/comment', CommentsController::class);
     // route create, update, and delete question
     Route::post('/store_question', [QuestionsAnswersController::class, 'store_question'])->name('store.question');
-    // show detail category comunity
-    Route::get('/detail-komunitas/{name}', [ComunityController::class, 'show'])->name('detail.komunitas');
 });
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // route for admin
@@ -67,4 +68,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     });
     Route::resource('/admin/kategori-komunitas', ComunityCategoriesController::class);
     Route::get('/admin/approval-questions', [ApprovalAdminController::class, 'index_approval_questions'])->name('index.approval.questions');
+    Route::delete('/admin/tolak-pertanyaan/{id}', [QuestionsAnswersController::class, 'destroy_question'])->name('block.question');
+    Route::put('/admin/terima-pertanyaan/{model}', [ApprovalAdminController::class, 'accept_approval_question'])->name('accept.question');
 });

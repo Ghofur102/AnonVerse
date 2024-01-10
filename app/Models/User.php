@@ -63,6 +63,10 @@ class User extends Authenticatable
         return $this->hasMany(comments::class, 'recipient_id');
     }
 
+    public function questions() {
+        return $this->hasMany(Questions::class, 'user_id');
+    }
+
 
     public $incrementing = false;
     protected $primaryKey = 'id';

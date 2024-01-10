@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
+            $table->uuid('user_id');
             $table->unsignedBigInteger('comunity_category_id');
             $table->text('pertanyaan');
             $table->enum('status', ['belum aktif', 'aktif', 'terblokir'])->default('belum aktif');
             $table->timestamps();
 
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('comunity_category_id')->references('id')->on('comunity_categories')->onDelete('restrict');
         });
     }
