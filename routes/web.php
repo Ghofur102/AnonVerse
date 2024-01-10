@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\ApprovalAdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AvatarsController;
 use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\ComunityCategoriesController;
+use App\Http\Controllers\ComunityController;
 use App\Http\Controllers\FeedsController;
 use App\Http\Controllers\LikesController;
+use App\Http\Controllers\QuestionsAnswersController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,9 +40,7 @@ Route::get('/', function () {
     return view('users.home');
 })->name('home');
 Route::get('/feed', [FeedsController::class, 'index'])->name('feed');
-Route::get('/komunitas', function () {
-    return view('users.komunitas');
-})->name('komunitas');
+Route::get('/komunitas', [ComunityController::class, 'index'])->name('komunitas');
 Route::get('/cari_avatar', [AvatarsController::class, 'cari_avatar'])->name('cari.avatar');
 
 Route::middleware(['auth'])->group(function () {
@@ -54,6 +55,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/like-comment/{recipient}/{sender}/{comment}', [LikesController::class, 'like_comment'])->name('like.comment');
     // route comment for user
     Route::resource('/comment', CommentsController::class);
+    // route create, update, and delete question
+    Route::post('/store_question', [QuestionsAnswersController::class, 'store_question'])->name('store.question');
+    // show detail category comunity
+    Route::get('/detail-komunitas/{name}', [ComunityController::class, 'show'])->name('detail.komunitas');
 });
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // route for admin
@@ -61,4 +66,5 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return view('admin.dashboard');
     });
     Route::resource('/admin/kategori-komunitas', ComunityCategoriesController::class);
+    Route::get('/admin/approval-questions', [ApprovalAdminController::class, 'index_approval_questions'])->name('index.approval.questions');
 });

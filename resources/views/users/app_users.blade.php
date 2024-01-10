@@ -8,14 +8,6 @@
     <link rel="shortcut icon" style="border-radius: 50%;" href="{{ asset('logo.png') }}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <style>
-        .active {
-            border: 1px solid black;
-            border-radius: 15px;
-            color: white;
-            background-color: black;
-        }
-    </style>
 </head>
 
 <body>
@@ -38,12 +30,12 @@
             </div>
 
             <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="/" class="nav-link px-2 {{ request()->is('/') ? 'active' : '' }}">Home</a></li>
-                <li><a href="/feed" class="nav-link px-2 {{ request()->is('feed') ? 'active' : '' }}">Feed</a></li>
-                <li><a href="/komunitas"
-                        class="nav-link px-2 {{ request()->is('komunitas') ? 'active' : '' }}">Komunitas</a></li>
-                <li><a href="/cari_avatar"
-                        class="nav-link px-2 {{ request()->is('cari_avatar') ? 'active' : '' }}">Avatar</a></li>
+                <li><a href="/" style="color: black;" class="nav-link px-2 {{ request()->is('/') ? 'active text-primary' : '' }}">Home</a></li>
+                <li><a href="/feed" style="color: black;" class="nav-link px-2 {{ request()->is('feed') ? 'active text-primary' : '' }}">Feed</a></li>
+                <li><a href="/komunitas" style="color: black;"
+                        class="nav-link px-2 {{ request()->is('komunitas') ? 'active text-primary' : '' }}">Komunitas</a></li>
+                <li><a href="/cari_avatar" style="color: black;"
+                        class="nav-link px-2 {{ request()->is('cari_avatar') ? 'active text-primary' : '' }}">Avatar</a></li>
             </ul>
 
             <div class="col-md-3 text-end">
@@ -54,7 +46,15 @@
                                 width="48" height="48" class="rounded-circle" />
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/akun-anda">Akun Anda</a></li>
+                            @if (Auth::check())
+                                @if (Auth::user()->role == 'admin')
+                                    <li><a class="dropdown-item" href="/admin/dashboard">Dashboard</a></li>
+                                @else
+                                    <li><a class="dropdown-item" href="/akun-anda">Akun Anda</a></li>
+                                @endif
+                            @else
+                                <li><a class="dropdown-item" href="/akun-anda">Akun Anda</a></li>
+                            @endif
                             <li><a class="dropdown-item" href="/chatify">Chatify</a></li>
                             <li><a class="dropdown-item" href="/logout">Keluar</a></li>
                         </ul>

@@ -16,6 +16,7 @@ use App\Repositories\CommentsRepository;
 use App\Repositories\ComunityCategoriesRepository;
 use App\Repositories\FeedsRepository;
 use App\Repositories\LikesRepository;
+use App\Repositories\QuestionsRepository;
 use App\Validators\AjaxValidator;
 use App\Validators\AuthenticateValidator;
 use Illuminate\Support\ServiceProvider;
@@ -56,6 +57,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UploadFileInterface::class, ComunityCategoriesRepository::class);
         $this->app->bind(UpdateFileInterface::class, ComunityCategoriesRepository::class);
         // comunity categories
+        // questions
+        $this->app->bind(StoreInterface::class, QuestionsRepository::class);
+        $this->app->bind(UpdateInterface::class, QuestionsRepository::class);
+        $this->app->bind(DestroyInterface::class, QuestionsRepository::class);
+        // questions
     }
 
     /**

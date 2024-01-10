@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\comunity_categories;
+use App\Models\Questions;
 use App\Repositories\ComunityCategoriesRepository;
 use Illuminate\Http\Request;
 
@@ -74,6 +75,9 @@ class ComunityCategoriesController extends Controller
      */
     public function destroy(string $model)
     {
+        if (Questions::where('comunity_category_id', $model)->count() >= 1) {
+            return redirect()->back()->withErrors('Masih ada data pertanyaan terkait dengan kategori komunitas!');
+        }
         $this->ComunityCategoriesRepository->destroy($model);
         return redirect()->back();
     }

@@ -43,7 +43,12 @@
                         </li>
                         <li class="nav-item">
                             <a href="/admin/kategori-komunitas">
-                                <button class="btn btn-outline-secondary w-100">Kategori Komunitas</button>
+                                <button class="btn btn-outline-secondary w-100 mb-3">Kategori Komunitas</button>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/approval-questions">
+                                <button class="btn btn-outline-secondary w-100 mb-3">Approval Pertanyaan</button>
                             </a>
                         </li>
                     </ul>

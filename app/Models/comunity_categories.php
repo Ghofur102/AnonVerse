@@ -13,4 +13,7 @@ class comunity_categories extends Model
         'name_category',
         'image_category'
     ];
+    public function questions() {
+        $this->hasMany(Questions::class, 'question_id');
+    }
 }
