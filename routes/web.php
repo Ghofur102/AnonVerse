@@ -45,7 +45,8 @@ Route::get('/komunitas', [ComunityController::class, 'index'])->name('komunitas'
 Route::get('/cari_avatar', [AvatarsController::class, 'cari_avatar'])->name('cari.avatar');
 // show detail category comunity
 Route::get('/detail-komunitas/{name}', [ComunityController::class, 'show'])->name('detail.komunitas');
-
+// show detail answer
+Route::get('/detail-jawaban/{id}', [ComunityController::class, 'show_answer'])->name('detail.answer');
 Route::middleware(['auth'])->group(function () {
     // route logout
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -58,8 +59,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/like-comment/{recipient}/{sender}/{comment}', [LikesController::class, 'like_comment'])->name('like.comment');
     // route comment for user
     Route::resource('/comment', CommentsController::class);
-    // route create, update, and delete question
+    // route create question
     Route::post('/store_question', [QuestionsAnswersController::class, 'store_question'])->name('store.question');
+    // route create and update answer
+    Route::post('/store_answer', [QuestionsAnswersController::class, 'store_answer'])->name('store.answer');
+
 });
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // route for admin

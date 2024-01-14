@@ -16,4 +16,7 @@ class comunity_categories extends Model
     public function questions() {
         $this->hasMany(Questions::class, 'question_id');
     }
+    public function answers() {
+        $this->hasMany(Answers::class, 'comunity_category_id');
+    }
 }

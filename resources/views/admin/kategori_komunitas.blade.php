@@ -24,7 +24,7 @@
             <div class="card-footer">
                 <div class="row">
                     @foreach ($categories as $item)
-                        <div class="card col-sm-6 col-md-4 col-lg-2">
+                        <div class="card col-sm-6 col-md-4 col-lg-2 mx-2">
                             <div class="card-body text-center">
                                 <img src="{{ asset('storage/' . $item->image_category) }}" alt=""
                                     style="border-radius: 50%;width:50px;height:50px;"> <br>

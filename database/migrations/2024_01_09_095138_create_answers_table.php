@@ -12,12 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('answers', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->unique();
+            $table->uuid('user_id');
             $table->unsignedBigInteger('question_id');
+            $table->unsignedBigInteger('comunity_category_id');
             $table->longText('jawaban');
             $table->timestamps();
 
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
+            $table->foreign('comunity_category_id')->references('id')->on('comunity_categories')->onDelete('restrict');
         });
     }
 

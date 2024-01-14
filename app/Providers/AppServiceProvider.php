@@ -11,6 +11,7 @@ use App\Contracts\UpdateFileInterface;
 use App\Contracts\UpdateInterface;
 use App\Contracts\UploadFileInterface;
 use App\Contracts\ValidatorInterface;
+use App\Repositories\AnswersRepository;
 use App\Repositories\AuthRepository;
 use App\Repositories\CommentsRepository;
 use App\Repositories\ComunityCategoriesRepository;
@@ -62,6 +63,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UpdateInterface::class, QuestionsRepository::class);
         $this->app->bind(DestroyInterface::class, QuestionsRepository::class);
         // questions
+        // answer
+        $this->app->bind(StoreInterface::class, AnswersRepository::class);
     }
 
     /**

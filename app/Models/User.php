@@ -67,6 +67,9 @@ class User extends Authenticatable
         return $this->hasMany(Questions::class, 'user_id');
     }
 
+    public function answers() {
+        return $this->hasMany(Answers::class, 'user_id');
+    }
 
     public $incrementing = false;
     protected $primaryKey = 'id';
