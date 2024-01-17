@@ -56,6 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/destroy-feed', [FeedsController::class, 'destroy'])->name('destroy.feed');
     // route like for user
     Route::post('/like-feed/{recipient}/{sender}/{feed}', [LikesController::class, 'like_feed'])->name('like.feed');
+    Route::post('/like-answer/{recipient}/{sender}/{answer}', [LikesController::class, 'like_answer'])->name('like.answer');
     Route::post('/like-comment/{recipient}/{sender}/{comment}', [LikesController::class, 'like_comment'])->name('like.comment');
     // route comment for user
     Route::resource('/comment', CommentsController::class);

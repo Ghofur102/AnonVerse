@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignUuid('feed_id')->references('id')->on('feeds')->onDelete('cascade')->nullable();
+            $table->uuid('feed_id')->nullable();
             $table->foreignUuid('sender_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreignUuid('recipient_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('comment');
             $table->text('parent_id')->nullable();
             $table->longText('parent_main_id')->nullable();
             $table->timestamps();
+            $table->foreign('feed_id')->references('id')->on('feeds')->onDelete('cascade')->nullable();
         });
         Schema::table('likes', function (Blueprint $table) {
             $table->unsignedBigInteger('comment_id')->nullable();

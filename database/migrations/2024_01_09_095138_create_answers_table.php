@@ -23,6 +23,16 @@ return new class extends Migration
             $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
             $table->foreign('comunity_category_id')->references('id')->on('comunity_categories')->onDelete('restrict');
         });
+
+        Schema::table('comments', function (Blueprint $table) {
+            $table->uuid('answer_id')->nullable();
+            $table->foreign('answer_id')->references('id')->on('answers')->onDelete('cascade');
+        });
+
+        Schema::table('likes', function (Blueprint $table) {
+            $table->uuid('answer_id')->nullable();
+            $table->foreign('answer_id')->references('id')->on('answers')->onDelete('cascade');
+        });
     }
 
     /**

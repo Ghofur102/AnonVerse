@@ -34,4 +34,10 @@ class Answers extends Model
     public function comunity_category() {
         return $this->belongsTo(comunity_categories::class, 'comunity_category_id');
     }
+    public function comments() {
+        return $this->hasMany(comments::class, 'answer_id');
+    }
+    public function likes() {
+        return $this->hasMany(comments::class, 'answer_id');
+    }
 }

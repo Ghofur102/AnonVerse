@@ -12,6 +12,7 @@ class comments extends Model
     protected $table = "comments";
     protected $fillable = [
         "feed_id",
+        "answer_id",
         "sender_id",
         "recipient_id",
         "comment",
@@ -38,5 +39,8 @@ class comments extends Model
     }
     public function count_likes() {
         return likes::where('recipient_id', $this->Recipient->id)->where('comment_id', $this->id)->count();
+    }
+    public function answers() {
+        return $this->belongsTo(Answers::class, 'answer_id');
     }
 }

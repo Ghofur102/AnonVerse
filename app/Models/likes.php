@@ -12,6 +12,7 @@ class likes extends Model
     protected $fillable = [
         "feed_id",
         "comment_id",
+        "answer_id",
         "sender_id",
         "recipient_id"
     ];
@@ -26,5 +27,8 @@ class likes extends Model
     }
     public function comment() {
         return $this->belongsTo(comments::class, 'comment_id');
+    }
+    public function answers() {
+        return $this->belongsTo(Answers::class, 'answer_id');
     }
 }
