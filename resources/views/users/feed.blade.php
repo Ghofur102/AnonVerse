@@ -88,7 +88,7 @@
                         @endphp
                         @if (in_array(strtolower($extension), $extensionImage))
                             <div class="text-center">
-                                <img src="{{ asset('storage/' . $feed->file) }}" style="object-fit:cover;" />
+                                <img src="{{ asset('storage/' . $feed->file) }}" style="object-fit:cover;width:100%;" />
                             </div>
                         @elseif (in_array(strtolower($extension), $extensionVideo))
                             <video class="w-100" controls>

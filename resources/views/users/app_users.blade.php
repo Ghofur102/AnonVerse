@@ -8,15 +8,25 @@
     <link rel="shortcut icon" style="border-radius: 50%;" href="{{ asset('logo.png') }}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
 </head>
 
 <body>
+    <script src="{{ asset('iziToast-master/dist/js/iziToast.min.js') }}" type="text/javascript"></script>
     <script>
         @if ($errors->any())
-            alert('{{ $errors->first() }}');
+            iziToast.error({
+                title: 'Error',
+                position: 'topCenter',
+                message: '{{ $errors->first() }}',
+            });
         @endif
         @if (session('success'))
-            alert("{{ session('success') }}");
+            iziToast.success({
+                title: 'Success',
+                position: 'topCenter',
+                message: "{{ session('success') }}"
+            });
         @endif
     </script>
     <div class="container-fluid">
@@ -30,12 +40,16 @@
             </div>
 
             <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="/" style="color: black;" class="nav-link px-2 {{ request()->is('/') ? 'active text-primary' : '' }}">Home</a></li>
-                <li><a href="/feed" style="color: black;" class="nav-link px-2 {{ request()->is('feed') ? 'active text-primary' : '' }}">Feed</a></li>
+                <li><a href="/" style="color: black;"
+                        class="nav-link px-2 {{ request()->is('/') ? 'active text-primary' : '' }}">Home</a></li>
+                <li><a href="/feed" style="color: black;"
+                        class="nav-link px-2 {{ request()->is('feed') ? 'active text-primary' : '' }}">Feed</a></li>
                 <li><a href="/komunitas" style="color: black;"
-                        class="nav-link px-2 {{ request()->is('komunitas') ? 'active text-primary' : '' }}">Komunitas</a></li>
+                        class="nav-link px-2 {{ request()->is('komunitas') ? 'active text-primary' : '' }}">Komunitas</a>
+                </li>
                 <li><a href="/cari_avatar" style="color: black;"
-                        class="nav-link px-2 {{ request()->is('cari_avatar') ? 'active text-primary' : '' }}">Avatar</a></li>
+                        class="nav-link px-2 {{ request()->is('cari_avatar') ? 'active text-primary' : '' }}">Avatar</a>
+                </li>
             </ul>
 
             <div class="col-md-3 text-end">
@@ -86,6 +100,7 @@
     </script>
     <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
         crossorigin="anonymous"></script>
+
 </body>
 
 </html>
